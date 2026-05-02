@@ -3,210 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>學分計算系統</title>
+    <title>高中學分勾選系統</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f4f7f6; font-family: "Microsoft JhengHei", sans-serif; }
-        .container { max-width: 600px; margin-top: 30px; }
-        .card { border: none; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        body { background-color: #f8f9fa; font-family: "Microsoft JhengHei", sans-serif; padding-bottom: 80px; }
+        .container { max-width: 700px; margin-top: 20px; }
+        .card { border-radius: 15px; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 20px; }
         .page { display: none; }
         .active { display: block; }
-        .btn-custom { background-color: #6d8299; color: white; border-radius: 10px; }
-        .btn-custom:hover { background-color: #5a6b7d; color: white; }
-        .table-sm td, .table-sm th { vertical-align: middle; }
+        .subject-row { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #eee; transition: 0.2s; }
+        .subject-row:hover { background-color: #f1f3f5; }
+        .subject-name { flex: 1; margin-left: 12px; font-weight: 500; }
+        .credit-badge { width: 50px; text-align: center; font-size: 0.8rem; background: #e9ecef; border-radius: 5px; padding: 2px 0; }
+        .total-footer { position: fixed; bottom: 0; width: 100%; background: #212529; color: white; padding: 15px; text-align: center; font-size: 1.2rem; font-weight: bold; z-index: 1000; }
+        .grade-header { border-left: 5px solid #0d6efd; padding-left: 10px; margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- 主選單 -->
-    <div id="page1" class="page active">
+    <!-- 主頁面 -->
+    <div id="pageMain" class="page active">
         <div class="card p-4 text-center">
-            <h3 class="mb-4 text-secondary">學分進度管理系統</h3>
+            <h2 class="mb-4">學分進度管理</h2>
             <div class="d-grid gap-3">
-                <button class="btn btn-custom py-3" onclick="showPage('page2')">高一學分輸入</button>
-                <button class="btn btn-custom py-3" onclick="showPage('page3')">高二學分輸入</button>
-                <button class="btn btn-custom py-3" onclick="showPage('page4')">高三學分輸入</button>
-                <button class="btn btn-success py-3" onclick="calculateTotal()">查看畢業進度</button>
+                <button class="btn btn-outline-primary btn-lg" onclick="showPage('pageG1')">高一：試探階段</button>
+                <button class="btn btn-outline-info btn-lg" onclick="showPage('pageG2')">高二：實踐階段</button>
+                <button class="btn btn-outline-danger btn-lg" onclick="showPage('pageG3')">高三：精粹階段</button>
             </div>
-            <div id="resultSummary" class="mt-4"></div>
+            <div class="mt-4 p-3 bg-white border rounded">
+                <p class="mb-1 text-muted">畢業總學分門檻：150 學分</p>
+                <div class="progress" style="height: 25px;">
+                    <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;">0%</div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- 頁面二：高一學分 -->
-    <div id="page2" class="page">
-        <button class="btn btn-sm btn-secondary mb-3" onclick="showPage('page1')">← 返回</button>
-        <h4 class="text-center mb-3">高一學分 (一上/一下)</h4>
-        <div id="g1_container"></div>
-        <button class="btn btn-dark w-100 mb-5" onclick="showPage('page1')">儲存並返回</button>
+    <!-- 高一頁面 -->
+    <div id="pageG1" class="page">
+        <button class="btn btn-secondary mb-3" onclick="showPage('pageMain')">← 返回主選單</button>
+        <div class="card p-3">
+            <h5 class="grade-header">高一上/下學期 (校定必修與多元選修)</h5>
+            <div id="g1_fixed_list"></div>
+            <div class="p-2 border-top mt-2">
+                <div class="subject-row">
+                    <input type="checkbox" class="credit-check" data-credit="2.0">
+                    <select class="form-select form-select-sm ms-2">
+                        <option value="">請選擇高一多元選修</option>
+                        <option>程式設計入門</option><option>數位藝術</option><option>生活英語</option>
+                    </select>
+                    <div class="credit-badge ms-2">2.0</div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- 頁面三：高二學分 -->
-    <div id="page3" class="page">
-        <button class="btn btn-sm btn-secondary mb-3" onclick="showPage('page1')">← 返回</button>
-        <h4 class="text-center mb-3">高二學分 (二上/二下)</h4>
-        <div id="g2_container"></div>
-        <button class="btn btn-dark w-100 mb-5" onclick="showPage('page1')">儲存並返回</button>
+    <!-- 高二頁面 -->
+    <div id="pageG2" class="page">
+        <button class="btn btn-secondary mb-3" onclick="showPage('pageMain')">← 返回主選單</button>
+        <div class="card p-3">
+            <h5 class="grade-header text-info">高二：跨班選修</h5>
+            <div id="g2_fixed_list"></div>
+            <div class="subject-row mt-2 border-top pt-2">
+                <input type="checkbox" class="credit-check" data-credit="4.0">
+                <select class="form-select form-select-sm ms-2">
+                    <option value="">請選擇高二跨班選修 (4學分)</option>
+                    <option>Arduino 機器人</option><option>日文基礎</option><option>社會議題實作</option>
+                </select>
+                <div class="credit-badge ms-2">4.0</div>
+            </div>
+        </div>
     </div>
 
-    <!-- 頁面四：高三學分 -->
-    <div id="page4" class="page">
-        <button class="btn btn-sm btn-secondary mb-3" onclick="showPage('page1')">← 返回</button>
-        <h4 class="text-center mb-3">高三學分 (三上/三下)</h4>
-        <div id="g3_container"></div>
-        <button class="btn btn-dark w-100 mb-5" onclick="showPage('page1')">儲存並返回</button>
+    <!-- 高三頁面 -->
+    <div id="pageG3" class="page">
+        <button class="btn btn-secondary mb-3" onclick="showPage('pageMain')">← 返回主選單</button>
+        
+        <!-- 高三上 (對應 課程地圖二) -->
+        <div class="card p-3 border-danger">
+            <h5 class="grade-header text-danger">高三上學期 (部定必修+加深加廣)</h5>
+            <div id="g3u_list"></div>
+            <div class="subject-row mt-2 border-top pt-2">
+                <input type="checkbox" class="credit-check" data-credit="2.0">
+                <select class="form-select form-select-sm ms-2">
+                    <option value="">請選擇高三上多元選修</option>
+                    <option>進階程式設計</option><option>心理學探討</option><option>多媒體剪輯</option>
+                </select>
+                <div class="credit-badge ms-2">2.0</div>
+            </div>
+        </div>
+
+        <!-- 高三下 (對應 課程地圖二) -->
+        <div class="card p-3 border-dark">
+            <h5 class="grade-header text-dark">高三下學期 (部定必修+加深加廣)</h5>
+            <div id="g3d_list"></div>
+            <div class="subject-row mt-2 border-top pt-2">
+                <input type="checkbox" class="credit-check" data-credit="2.0">
+                <select class="form-select form-select-sm ms-2">
+                    <option value="">請選擇高三下多元選修</option>
+                    <option>財經素養</option><option>生命科學專題</option><option>跨領域實作</option>
+                </select>
+                <div class="credit-badge ms-2">2.0</div>
+            </div>
+        </div>
     </div>
 </div>
 
+<div class="total-footer">
+    累積學分：<span id="totalDisplay">0</span> / 150
+</div>
+
 <script>
-// --- 資料結構定義 ---
-const data = {
-    g1: {
-        up: [
-            {n: "國語文", c: 4}, {n: "英語文", c: 4}, {n: "數學", c: 4},
-            {n: "歷史", c: 2}, {n: "物理", c: 2}, {n: "生物", c: 2},
-            {n: "家政", c: 2}, {n: "生活科技", c: 2}, {n: "健康與護理", c: 2},
-            {n: "體育", c: 2}, {n: "閩南語文", c: 1}
-        ],
-        dn: [
-            {n: "國語文", c: 4}, {n: "英語文", c: 4}, {n: "數學", c: 4},
-            {n: "地理", c: 2}, {n: "公民與社會", c: 2}, {n: "化學", c: 2},
-            {n: "地球科學", c: 2}, {n: "美術", c: 2}, {n: "資訊科技", c: 2},
-            {n: "體育", c: 2}, {n: "閩南語文", c: 1}
-        ]
-    },
-    g2: {
-        up: [
-            {n: "國語文", c: 4}, {n: "英語文", c: 4}, {n: "數學A", c: 4},
-            {n: "歷史", c: 2}, {n: "地理", c: 2}, {n: "公民與社會", c: 2},
-            {n: "物理-探究A", c: 2}, {n: "美術", c: 2}, {n: "體育", c: 2},
-            {n: "國學常識", c: 2}, {n: "歷史學探究", c: 2}, {n: "地理與人文", c: 2}
-        ],
-        dn: [
-            {n: "國語文", c: 4}, {n: "英語文", c: 4}, {n: "數學A", c: 4},
-            {n: "歷史", c: 2}, {n: "地理", c: 2}, {n: "公民與社會", c: 2},
-            {n: "化學-探究B", c: 2}, {n: "音樂", c: 2}, {n: "體育", c: 2},
-            {n: "各類文學選讀", c: 2}, {n: "公共議題與社會", c: 2}, {n: "日語", c: 2}
-        ]
-    },
-    g3: {
-        up: [
-            {n: "國語文", c: 4}, {n: "英語文", c: 2}, {n: "音樂", c: 1},
-            {n: "藝術生活", c: 1}, {n: "生涯規劃", c: 1}, {n: "體育", c: 2},
-            {n: "全民國防教育", c: 1}, {n: "英文作文", c: 2}, {n: "數學乙", c: 4},
-            {n: "族群、性別與國家歷史", c: 3}, {n: "空間資訊科技", c: 3}, {n: "現代社會與經濟", c: 3}
-        ],
-        dn: [
-            {n: "國語文", c: 4}, {n: "英語文", c: 2}, {n: "美術", c: 1},
-            {n: "藝術生活", c: 1}, {n: "法律與生活", c: 1}, {n: "體育", c: 2},
-            {n: "全民國防教育", c: 1}, {n: "英文讀本", c: 2}, {n: "數學乙", c: 4},
-            {n: "文獻與歷史探究", c: 3}, {n: "區域地理", c: 3}, {n: "民主政治", c: 3}
-        ]
-    }
+const subjectsData = {
+    g1: [{n:"國英數(必修)", c:12}, {n:"歷地公(必修)", c:6}, {n:"物化生地(必修)", c:8}],
+    g2: [{n:"國語文(二上下)", c:8}, {n:"英語文(二上下)", c:8}, {n:"數學A(二上下)", c:8}],
+    // 根據「課程地圖(二)」精確設定高三科目
+    g3u: [
+        {n:"部定：國文4/英文2/體育2", c:8.0},
+        {n:"部定：藝生1/音樂1/生涯1/國防1", c:4.0},
+        {n:"選修：英文作文", c:2.0},
+        {n:"選修：數學乙", c:4.0},
+        {n:"選修：歷史/地理/公民(加深)", c:3.0}
+    ],
+    g3d: [
+        {n:"部定：體育2/藝生1/音樂1", c:4.0},
+        {n:"部定：生命1/國防1", c:2.0},
+        {n:"選修：語文表達/英文閱讀", c:4.0},
+        {n:"選修：數學乙", c:4.0},
+        {n:"選修：民主政治/環境議題", c:3.0}
+    ]
 };
 
 function showPage(id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(id).classList.add('active');
+    window.scrollTo(0,0);
 }
 
-function renderTables() {
-    // 渲染高一
-    renderGrade('g1', 'g1_container', '臥龍學：文化1', '臥龍學：溝通1', '臥龍學：邏輯3', '臥龍學：文化2');
-    // 渲染高二 (多元選修一學期兩個)
-    renderGradeG2('g2', 'g2_container');
-    // 渲染高三 (一學期多元+加深各一)
-    renderGradeG3('g3', 'g3_container');
-}
-
-function renderGrade(gradeKey, containerId, s1, s2, s3, s4) {
-    const container = document.getElementById(containerId);
-    container.innerHTML = `
-        <div class="card mb-3 p-3">
-            <h6 class="fw-bold">上學期 (必修)</h6>
-            <table class="table table-sm">${generateRows(data[gradeKey].up, gradeKey + 'u')}</table>
-            <h6 class="fw-bold">校定必修 (1.0x2)</h6>
-            <input type="number" class="form-control form-control-sm mb-1" placeholder="${s1}">
-            <input type="number" class="form-control form-control-sm mb-1" placeholder="${s2}">
-            <h6 class="fw-bold">多元選修 (2.0)</h6>
-            <input type="number" class="form-control form-control-sm" placeholder="多元課程名稱">
+function render(id, list) {
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.innerHTML = list.map(s => `
+        <div class="subject-row">
+            <input type="checkbox" class="credit-check" data-credit="${s.c}">
+            <span class="subject-name">${s.n}</span>
+            <div class="credit-badge">${s.c}</div>
         </div>
-        <div class="card mb-3 p-3">
-            <h6 class="fw-bold">下學期 (必修)</h6>
-            <table class="table table-sm">${generateRows(data[gradeKey].dn, gradeKey + 'd')}</table>
-            <h6 class="fw-bold">校定必修 (1.0x2)</h6>
-            <input type="number" class="form-control form-control-sm mb-1" placeholder="${s3}">
-            <input type="number" class="form-control form-control-sm mb-1" placeholder="${s4}">
-            <h6 class="fw-bold">多元選修 (2.0)</h6>
-            <input type="number" class="form-control form-control-sm" placeholder="多元課程名稱">
-        </div>
-    `;
-}
-
-function renderGradeG2(gradeKey, containerId) {
-    const container = document.getElementById(containerId);
-    container.innerHTML = `
-        <div class="card mb-3 p-3 border-info">
-            <h6 class="fw-bold">二上 必修與加深加廣</h6>
-            <table class="table table-sm">${generateRows(data[gradeKey].up, 'g2u')}</table>
-            <h6 class="fw-bold">多元選修 (2.0 x 2)</h6>
-            <input type="number" class="form-control form-control-sm mb-1" placeholder="選修課程 A">
-            <input type="number" class="form-control form-control-sm" placeholder="選修課程 B">
-        </div>
-        <div class="card mb-3 p-3 border-warning">
-            <h6 class="fw-bold">二下 必修與加深加廣</h6>
-            <table class="table table-sm">${generateRows(data[gradeKey].dn, 'g2d')}</table>
-            <h6 class="fw-bold">多元選修 (2.0 x 2)</h6>
-            <input type="number" class="form-control form-control-sm mb-1" placeholder="選修課程 C">
-            <input type="number" class="form-control form-control-sm" placeholder="選修課程 D">
-        </div>
-    `;
-}
-
-function renderGradeG3(gradeKey, containerId) {
-    const container = document.getElementById(containerId);
-    container.innerHTML = `
-        <div class="card mb-3 p-3 border-danger">
-            <h6 class="fw-bold text-danger">三上 必修與選修 (對應 p1, p2)</h6>
-            <table class="table table-sm">${generateRows(data[gradeKey].up, 'g3u')}</table>
-            <h6 class="fw-bold">自選項目</h6>
-            <div class="input-group input-group-sm mb-1">
-                <span class="input-group-text">多元選修(2.0)</span>
-                <input type="number" class="form-control" placeholder="成績">
-            </div>
-            <div class="input-group input-group-sm">
-                <span class="input-group-text">領域專題(1.0)</span>
-                <input type="number" class="form-control" placeholder="成績">
-            </div>
-        </div>
-        <div class="card mb-3 p-3 border-dark">
-            <h6 class="fw-bold">三下 必修與選修</h6>
-            <table class="table table-sm">${generateRows(data[gradeKey].dn, 'g3d')}</table>
-            <h6 class="fw-bold">自選項目</h6>
-            <div class="input-group input-group-sm mb-1">
-                <span class="input-group-text">多元選修(2.0)</span>
-                <input type="number" class="form-control" placeholder="成績">
-            </div>
-            <div class="input-group input-group-sm">
-                <span class="input-group-text">加深加廣(1.0)</span>
-                <input type="number" class="form-control" placeholder="成績">
-            </div>
-        </div>
-    `;
-}
-
-function generateRows(list, prefix) {
-    return list.map((s, i) => `
-        <tr><td>${s.n}</td><td class="text-muted small">${s.c}</td>
-        <td width="80"><input type="number" class="form-control form-control-sm" min="0" max="100"></td></tr>
     `).join('');
 }
 
-function calculateTotal() {
-    alert("儲存成功！目前系統已記錄您高一至高三的學分結構。");
+function updateScore() {
+    let total = 0;
+    document.querySelectorAll('.credit-check:checked').forEach(cb => {
+        total += parseFloat(cb.getAttribute('data-credit'));
+    });
+    document.getElementById('totalDisplay').innerText = total.toFixed(1);
+    
+    // 更新進度條
+    const percent = Math.min((total / 150) * 100, 100);
+    const bar = document.getElementById('progressBar');
+    bar.style.width = percent + '%';
+    bar.innerText = Math.round(percent) + '%';
 }
 
-document.addEventListener('DOMContentLoaded', renderTables);
+document.addEventListener('change', (e) => {
+    if(e.target.classList.contains('credit-check')) updateScore();
+});
+
+// 初始化渲染
+render('g1_fixed_list', subjectsData.g1);
+render('g2_fixed_list', subjectsData.g2);
+render('g3u_list', subjectsData.g3u);
+render('g3d_list', subjectsData.g3d);
 </script>
+
 </body>
 </html>
