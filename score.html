@@ -350,6 +350,61 @@
 </div>
 
 <script>
+        // 1. 禁用滑鼠右鍵
+    document.addEventListener('contextmenu', function (e) {
+        e.preventDefault();
+    }, false);
+    
+    // 2. 禁用特定組合鍵
+    document.onkeydown = function (e) {
+        // 檢查是否按下 Ctrl 鍵 (或 Mac 的 Command 鍵)
+        const ctrlKey = e.ctrlKey || e.metaKey;
+    
+        // 禁用 Ctrl+U (查看原始碼)
+        if (ctrlKey && e.keyCode === 85) {
+            e.preventDefault();
+            return false;
+        }
+    
+        // 禁用 Ctrl+S (儲存網頁)
+        if (ctrlKey && e.keyCode === 83) {
+            e.preventDefault();
+            return false;
+        }
+    
+        // 禁用 F12 (開發者工具)
+        if (e.keyCode === 123) {
+            e.preventDefault();
+            return false;
+        }
+    
+        // 禁用 Ctrl+Shift+I (檢查元素)
+        if (ctrlKey && e.shiftKey && e.keyCode === 73) {
+            e.preventDefault();
+            return false;
+        }
+    };
+        // 儲存資料的範例邏輯
+    function saveScores() {
+        const allInputs = document.querySelectorAll('input[type="number"]');
+        const data = {};
+        allInputs.forEach(input => {
+            data[input.id] = input.value;
+        });
+        localStorage.setItem('myScores', JSON.stringify(data));
+    }
+    
+    // 讀取資料
+    function loadScores() {
+        const savedData = JSON.parse(localStorage.getItem('myScores'));
+        if (savedData) {
+            Object.keys(savedData).forEach(id => {
+                if (document.getElementById(id)) {
+                    document.getElementById(id).value = savedData[id];
+                }
+            });
+        }
+    }
     // 預設資料設定
     const g1_subjects = ["國文", "英文", "數學", "體育", "歷史/地理", "物理/公民", "生物/化學", "健護/地科", "家政/美術", "生科/資訊", "本土"];
     const g2_subjects = ["國文", "英文", "數A", "體育", "歷史", "地理", "公民", "音樂/美術", "自然探究"];
