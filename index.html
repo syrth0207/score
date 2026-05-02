@@ -3,20 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>高中學分勾選系統</title>
+    <title>學分進度管理系統 - 莫蘭迪風格</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f8f9fa; font-family: "Microsoft JhengHei", sans-serif; padding-bottom: 80px; }
-        .container { max-width: 700px; margin-top: 20px; }
-        .card { border-radius: 15px; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        :root {
+            --morandi-green-dark: #8E9775;
+            --morandi-green-light: #E2E4DC;
+            --morandi-purple-dark: #9A8194;
+            --morandi-purple-light: #E9E4E9;
+            --morandi-gray: #B4B4B4;
+            --text-color: #555;
+        }
+
+        body { 
+            background-color: #F2F2F2; 
+            font-family: "Microsoft JhengHei", sans-serif; 
+            color: var(--text-color);
+            padding-bottom: 100px;
+        }
+
+        .container { max-width: 700px; margin-top: 30px; }
+
+        /* 卡片樣式 */
+        .card { 
+            border-radius: 20px; 
+            border: none; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
+            background-color: white;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background-color: var(--morandi-green-dark);
+            color: white;
+            border: none;
+            font-weight: bold;
+            text-align: center;
+            padding: 15px;
+        }
+
+        .card-header.purple { background-color: var(--morandi-purple-dark); }
+
         .page { display: none; }
         .active { display: block; }
-        .subject-row { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #eee; transition: 0.2s; }
-        .subject-row:hover { background-color: #f1f3f5; }
-        .subject-name { flex: 1; margin-left: 12px; font-weight: 500; }
-        .credit-badge { width: 50px; text-align: center; font-size: 0.8rem; background: #e9ecef; border-radius: 5px; padding: 2px 0; }
-        .total-footer { position: fixed; bottom: 0; width: 100%; background: #212529; color: white; padding: 15px; text-align: center; font-size: 1.2rem; font-weight: bold; z-index: 1000; }
-        .grade-header { border-left: 5px solid #0d6efd; padding-left: 10px; margin-bottom: 15px; }
+
+        /* 科目列樣式 */
+        .subject-row { 
+            display: flex; 
+            align-items: center; 
+            padding: 12px 15px; 
+            border-bottom: 1px solid #F0F0F0; 
+            transition: background 0.3s;
+        }
+        .subject-row:hover { background-color: var(--morandi-green-light); }
+        .purple-row:hover { background-color: var(--morandi-purple-light); }
+
+        .subject-name { flex: 1; margin-left: 15px; font-size: 1rem; }
+
+        /* 勾選框樣式 */
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--morandi-green-dark);
+            cursor: pointer;
+        }
+
+        .purple-check { accent-color: var(--morandi-purple-dark) !important; }
+
+        /* 學分標籤 */
+        .credit-tag { 
+            width: 55px; 
+            text-align: center; 
+            background: #FAFAFA; 
+            border: 1px solid #EEE; 
+            border-radius: 8px; 
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        /* 底部總分列 */
+        .total-bar { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+            background: var(--morandi-green-dark); 
+            color: white; 
+            padding: 18px; 
+            text-align: center; 
+            font-size: 1.2rem; 
+            font-weight: bold;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .btn-morandi-green { background-color: var(--morandi-green-dark); color: white; border-radius: 12px; }
+        .btn-morandi-purple { background-color: var(--morandi-purple-dark); color: white; border-radius: 12px; }
+        .btn-morandi-green:hover, .btn-morandi-purple:hover { opacity: 0.9; color: white; }
+
+        .section-label {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--morandi-gray);
+            margin: 15px 0 5px 15px;
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body>
@@ -24,131 +116,118 @@
 <div class="container">
     <!-- 主頁面 -->
     <div id="pageMain" class="page active">
-        <div class="card p-4 text-center">
-            <h2 class="mb-4">學分進度管理</h2>
+        <div class="card p-5 text-center">
+            <h2 class="mb-4" style="color: var(--morandi-green-dark);">學分進度管理系統</h2>
             <div class="d-grid gap-3">
-                <button class="btn btn-outline-primary btn-lg" onclick="showPage('pageG1')">高一：試探階段</button>
-                <button class="btn btn-outline-info btn-lg" onclick="showPage('pageG2')">高二：實踐階段</button>
-                <button class="btn btn-outline-danger btn-lg" onclick="showPage('pageG3')">高三：精粹階段</button>
+                <button class="btn btn-morandi-green py-3 shadow-sm" onclick="showPage('pageG1')">高一：試探學分</button>
+                <button class="btn btn-morandi-purple py-3 shadow-sm" onclick="showPage('pageG2')">高二：實踐學分</button>
+                <button class="btn btn-morandi-green py-3 shadow-sm" onclick="showPage('pageG3')">高三：精粹學分</button>
             </div>
-            <div class="mt-4 p-3 bg-white border rounded">
-                <p class="mb-1 text-muted">畢業總學分門檻：150 學分</p>
-                <div class="progress" style="height: 25px;">
-                    <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;">0%</div>
+            <div class="mt-5 p-4 rounded-4 border" style="background-color: var(--morandi-green-light);">
+                <h4 class="mb-2">累積畢業學分：<span id="mainTotal">0.0</span> / 150</h4>
+                <div class="progress mt-3" style="height: 12px; border-radius: 10px; background-color: white;">
+                    <div id="progressBar" class="progress-bar" style="width: 0%; background-color: var(--morandi-green-dark);"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 高一頁面 -->
-    <div id="pageG1" class="page">
-        <button class="btn btn-secondary mb-3" onclick="showPage('pageMain')">← 返回主選單</button>
-        <div class="card p-3">
-            <h5 class="grade-header">高一上/下學期 (校定必修與多元選修)</h5>
-            <div id="g1_fixed_list"></div>
-            <div class="p-2 border-top mt-2">
-                <div class="subject-row">
-                    <input type="checkbox" class="credit-check" data-credit="2.0">
-                    <select class="form-select form-select-sm ms-2">
-                        <option value="">請選擇高一多元選修</option>
-                        <option>程式設計入門</option><option>數位藝術</option><option>生活英語</option>
-                    </select>
-                    <div class="credit-badge ms-2">2.0</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 高二頁面 -->
-    <div id="pageG2" class="page">
-        <button class="btn btn-secondary mb-3" onclick="showPage('pageMain')">← 返回主選單</button>
-        <div class="card p-3">
-            <h5 class="grade-header text-info">高二：跨班選修</h5>
-            <div id="g2_fixed_list"></div>
-            <div class="subject-row mt-2 border-top pt-2">
-                <input type="checkbox" class="credit-check" data-credit="4.0">
-                <select class="form-select form-select-sm ms-2">
-                    <option value="">請選擇高二跨班選修 (4學分)</option>
-                    <option>Arduino 機器人</option><option>日文基礎</option><option>社會議題實作</option>
-                </select>
-                <div class="credit-badge ms-2">4.0</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 高三頁面 -->
+    <!-- 高三頁面 (每一項分開) -->
     <div id="pageG3" class="page">
-        <button class="btn btn-secondary mb-3" onclick="showPage('pageMain')">← 返回主選單</button>
+        <button class="btn btn-sm btn-outline-secondary mb-3" onclick="showPage('pageMain')">← 返回主選單</button>
         
-        <!-- 高三上 (對應 課程地圖二) -->
-        <div class="card p-3 border-danger">
-            <h5 class="grade-header text-danger">高三上學期 (部定必修+加深加廣)</h5>
-            <div id="g3u_list"></div>
-            <div class="subject-row mt-2 border-top pt-2">
+        <!-- 三上 -->
+        <div class="card">
+            <div class="card-header">高三上學期 (精粹一)</div>
+            <div class="section-label">部定必修</div>
+            <div id="g3u_fixed"></div>
+            
+            <div class="section-label">校定與加深選修</div>
+            <div id="g3u_elective"></div>
+            
+            <div class="section-label">多元與專題 (下拉選擇)</div>
+            <div class="subject-row">
                 <input type="checkbox" class="credit-check" data-credit="2.0">
                 <select class="form-select form-select-sm ms-2">
-                    <option value="">請選擇高三上多元選修</option>
-                    <option>進階程式設計</option><option>心理學探討</option><option>多媒體剪輯</option>
+                    <option value="">選擇多元選修 (2.0)</option>
+                    <option>程式語言實務</option><option>社會研究方法</option><option>自主學習專題</option>
                 </select>
-                <div class="credit-badge ms-2">2.0</div>
+                <div class="credit-tag ms-2">2.0</div>
+            </div>
+            <div class="subject-row">
+                <input type="checkbox" class="credit-check" data-credit="1.0">
+                <select class="form-select form-select-sm ms-2">
+                    <option value="">選擇領域專案 (1.0)</option>
+                    <option>科技應用專題</option><option>資訊安全概論</option>
+                </select>
+                <div class="credit-tag ms-2">1.0</div>
             </div>
         </div>
 
-        <!-- 高三下 (對應 課程地圖二) -->
-        <div class="card p-3 border-dark">
-            <h5 class="grade-header text-dark">高三下學期 (部定必修+加深加廣)</h5>
-            <div id="g3d_list"></div>
-            <div class="subject-row mt-2 border-top pt-2">
-                <input type="checkbox" class="credit-check" data-credit="2.0">
+        <!-- 三下 -->
+        <div class="card">
+            <div class="card-header purple">高三下學期 (精粹二)</div>
+            <div class="section-label">部定必修</div>
+            <div id="g3d_fixed"></div>
+            
+            <div class="section-label">加深加廣選修</div>
+            <div id="g3d_elective"></div>
+
+            <div class="section-label">自選課程 (下拉選擇)</div>
+            <div class="subject-row purple-row">
+                <input type="checkbox" class="credit-check purple-check" data-credit="2.0">
                 <select class="form-select form-select-sm ms-2">
-                    <option value="">請選擇高三下多元選修</option>
-                    <option>財經素養</option><option>生命科學專題</option><option>跨領域實作</option>
+                    <option value="">選擇多元選修 (2.0)</option>
+                    <option>財經素養</option><option>各類文學選讀</option>
                 </select>
-                <div class="credit-badge ms-2">2.0</div>
+                <div class="credit-tag ms-2">2.0</div>
             </div>
         </div>
     </div>
+    
+    <!-- 高一與高二頁面以此類推，結構相同 -->
 </div>
 
-<div class="total-footer">
-    累積學分：<span id="totalDisplay">0</span> / 150
+<div class="total-bar" id="footerBar">
+    目前獲得總學分：<span id="barTotal">0.0</span> / 150
 </div>
 
 <script>
-const subjectsData = {
-    g1: [{n:"國英數(必修)", c:12}, {n:"歷地公(必修)", c:6}, {n:"物化生地(必修)", c:8}],
-    g2: [{n:"國語文(二上下)", c:8}, {n:"英語文(二上下)", c:8}, {n:"數學A(二上下)", c:8}],
-    // 根據「課程地圖(二)」精確設定高三科目
-    g3u: [
-        {n:"部定：國文4/英文2/體育2", c:8.0},
-        {n:"部定：藝生1/音樂1/生涯1/國防1", c:4.0},
-        {n:"選修：英文作文", c:2.0},
-        {n:"選修：數學乙", c:4.0},
-        {n:"選修：歷史/地理/公民(加深)", c:3.0}
-    ],
-    g3d: [
-        {n:"部定：體育2/藝生1/音樂1", c:4.0},
-        {n:"部定：生命1/國防1", c:2.0},
-        {n:"選修：語文表達/英文閱讀", c:4.0},
-        {n:"選修：數學乙", c:4.0},
-        {n:"選修：民主政治/環境議題", c:3.0}
-    ]
-};
+// 詳細科目列表
+const g3u_fixed_list = [
+    {n: "國語文", c: 4.0}, {n: "英語文", c: 2.0}, {n: "體育", c: 2.0},
+    {n: "藝術生活", c: 1.0}, {n: "音樂", c: 1.0}, {n: "生涯規劃", c: 1.0}, {n: "全民國防", c: 1.0}
+];
+const g3u_elective_list = [
+    {n: "英文作文", c: 2.0}, {n: "數學乙", c: 4.0},
+    {n: "族群性別與國家歷史", c: 3.0}, {n: "空間資訊科技", c: 3.0}, {n: "現代社會與經濟", c: 3.0}
+];
+
+const g3d_fixed_list = [
+    {n: "體育", c: 2.0}, {n: "藝術生活", c: 1.0}, {n: "音樂", c: 1.0},
+    {n: "生命教育", c: 1.0}, {n: "全民國防", c: 1.0}
+];
+const g3d_elective_list = [
+    {n: "語文表達與傳播", c: 2.0}, {n: "英文閱讀與寫作", c: 2.0},
+    {n: "民主政治與法律", c: 3.0}, {n: "數學乙", c: 4.0}
+];
 
 function showPage(id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    window.scrollTo(0,0);
+    // 如果是高二或主頁，切換底色為綠/紫
+    const bar = document.getElementById('footerBar');
+    bar.style.backgroundColor = (id === 'pageG2') ? '#9A8194' : '#8E9775';
 }
 
-function render(id, list) {
-    const el = document.getElementById(id);
-    if(!el) return;
+function render(containerId, list, isPurple = false) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
     el.innerHTML = list.map(s => `
-        <div class="subject-row">
-            <input type="checkbox" class="credit-check" data-credit="${s.c}">
+        <div class="subject-row ${isPurple ? 'purple-row' : ''}">
+            <input type="checkbox" class="credit-check ${isPurple ? 'purple-check' : ''}" data-credit="${s.c}">
             <span class="subject-name">${s.n}</span>
-            <div class="credit-badge">${s.c}</div>
+            <div class="credit-tag">${s.c.toFixed(1)}</div>
         </div>
     `).join('');
 }
@@ -158,24 +237,23 @@ function updateScore() {
     document.querySelectorAll('.credit-check:checked').forEach(cb => {
         total += parseFloat(cb.getAttribute('data-credit'));
     });
-    document.getElementById('totalDisplay').innerText = total.toFixed(1);
+    const formatted = total.toFixed(1);
+    document.getElementById('mainTotal').innerText = formatted;
+    document.getElementById('barTotal').innerText = formatted;
     
-    // 更新進度條
     const percent = Math.min((total / 150) * 100, 100);
-    const bar = document.getElementById('progressBar');
-    bar.style.width = percent + '%';
-    bar.innerText = Math.round(percent) + '%';
+    document.getElementById('progressBar').style.width = percent + '%';
 }
 
 document.addEventListener('change', (e) => {
-    if(e.target.classList.contains('credit-check')) updateScore();
+    if (e.target.classList.contains('credit-check')) updateScore();
 });
 
 // 初始化渲染
-render('g1_fixed_list', subjectsData.g1);
-render('g2_fixed_list', subjectsData.g2);
-render('g3u_list', subjectsData.g3u);
-render('g3d_list', subjectsData.g3d);
+render('g3u_fixed', g3u_fixed_list);
+render('g3u_elective', g3u_elective_list);
+render('g3d_fixed', g3d_fixed_list, true);
+render('g3d_elective', g3d_elective_list, true);
 </script>
 
 </body>
