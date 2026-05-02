@@ -1,260 +1,509 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>學分進度管理系統 - 莫蘭迪風格</title>
+    <title>高中學分計算系統 - 財經法商組</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         :root {
-            --morandi-green-dark: #8E9775;
-            --morandi-green-light: #E2E4DC;
-            --morandi-purple-dark: #9A8194;
-            --morandi-purple-light: #E9E4E9;
-            --morandi-gray: #B4B4B4;
-            --text-color: #555;
+            --primary-color: #7A6F9B; /* 莫蘭迪紫主色 */
+            --primary-light: #F3EEF6; /* 淺紫背景 */
+            --accent-color: #5E5274; /* 深紫重點色 */
+            --bg-color: #F8F9FA;
         }
 
-        body { 
-            background-color: #F2F2F2; 
-            font-family: "Microsoft JhengHei", sans-serif; 
-            color: var(--text-color);
-            padding-bottom: 100px;
+        body {
+            background-color: var(--bg-color);
+            font-family: "Microsoft JhengHei", "PingFang TC", sans-serif;
+            color: #333;
         }
 
-        .container { max-width: 700px; margin-top: 30px; }
+        header {
+            background: linear-gradient(135deg, #7A6F9B, #9B8DBF);
+            color: #fff !important;
+            border-radius: 0 0 20px 20px;
+            padding: 30px 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
 
-        /* 卡片樣式 */
-        .card { 
-            border-radius: 20px; 
-            border: none; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
-            background-color: white;
-            margin-bottom: 25px;
-            overflow: hidden;
+        .page {
+            display: none;
+            padding: 25px 15px;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            background: #fff;
         }
 
         .card-header {
-            background-color: var(--morandi-green-dark);
-            color: white;
-            border: none;
+            background-color: var(--primary-light);
+            color: var(--accent-color);
             font-weight: bold;
-            text-align: center;
+            border-bottom: 2px solid #E5D9ED;
+            border-top-left-radius: 10px !important;
+            border-top-right-radius: 10px !important;
+        }
+
+        .btn-menu {
+            width: 100%;
+            margin-bottom: 12px;
             padding: 15px;
+            font-size: 1.15rem;
+            font-weight: 500;
+            border-radius: 10px;
+            border: 1.5px solid var(--primary-color);
+            color: var(--primary-color);
+            background: #fff;
+            transition: all 0.2s ease-in-out;
         }
 
-        .card-header.purple { background-color: var(--morandi-purple-dark); }
-
-        .page { display: none; }
-        .active { display: block; }
-
-        /* 科目列樣式 */
-        .subject-row { 
-            display: flex; 
-            align-items: center; 
-            padding: 12px 15px; 
-            border-bottom: 1px solid #F0F0F0; 
-            transition: background 0.3s;
-        }
-        .subject-row:hover { background-color: var(--morandi-green-light); }
-        .purple-row:hover { background-color: var(--morandi-purple-light); }
-
-        .subject-name { flex: 1; margin-left: 15px; font-size: 1rem; }
-
-        /* 勾選框樣式 */
-        input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            accent-color: var(--morandi-green-dark);
-            cursor: pointer;
+        .btn-menu:hover {
+            background: var(--primary-light);
+            color: var(--accent-color);
+            transform: translateY(-2px);
         }
 
-        .purple-check { accent-color: var(--morandi-purple-dark) !important; }
-
-        /* 學分標籤 */
-        .credit-tag { 
-            width: 55px; 
-            text-align: center; 
-            background: #FAFAFA; 
-            border: 1px solid #EEE; 
-            border-radius: 8px; 
-            font-size: 0.85rem;
-            color: #888;
+        .btn-custom {
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
         }
 
-        /* 底部總分列 */
-        .total-bar { 
-            position: fixed; 
-            bottom: 0; 
-            left: 0; 
-            right: 0; 
-            background: var(--morandi-green-dark); 
-            color: white; 
-            padding: 18px; 
-            text-align: center; 
-            font-size: 1.2rem; 
-            font-weight: bold;
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
-            z-index: 1000;
+        .btn-custom:hover {
+            background-color: var(--accent-color);
+            color: #fff;
         }
 
-        .btn-morandi-green { background-color: var(--morandi-green-dark); color: white; border-radius: 12px; }
-        .btn-morandi-purple { background-color: var(--morandi-purple-dark); color: white; border-radius: 12px; }
-        .btn-morandi-green:hover, .btn-morandi-purple:hover { opacity: 0.9; color: white; }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+        }
 
-        .section-label {
-            font-size: 0.9rem;
-            font-weight: bold;
-            color: var(--morandi-gray);
-            margin: 15px 0 5px 15px;
-            text-transform: uppercase;
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(122, 111, 155, 0.25);
+        }
+
+        .table {
+            margin-bottom: 0;
+            vertical-align: middle;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <!-- 主頁面 -->
-    <div id="pageMain" class="page active">
-        <div class="card p-5 text-center">
-            <h2 class="mb-4" style="color: var(--morandi-green-dark);">學分進度管理系統</h2>
-            <div class="d-grid gap-3">
-                <button class="btn btn-morandi-green py-3 shadow-sm" onclick="showPage('pageG1')">高一：試探學分</button>
-                <button class="btn btn-morandi-purple py-3 shadow-sm" onclick="showPage('pageG2')">高二：實踐學分</button>
-                <button class="btn btn-morandi-green py-3 shadow-sm" onclick="showPage('pageG3')">高三：精粹學分</button>
-            </div>
-            <div class="mt-5 p-4 rounded-4 border" style="background-color: var(--morandi-green-light);">
-                <h4 class="mb-2">累積畢業學分：<span id="mainTotal">0.0</span> / 150</h4>
-                <div class="progress mt-3" style="height: 12px; border-radius: 10px; background-color: white;">
-                    <div id="progressBar" class="progress-bar" style="width: 0%; background-color: var(--morandi-green-dark);"></div>
+<div class="container py-3" style="max-width: 768px;">
+    
+    <header class="text-center mb-4">
+        <h2 class="fw-bold m-0">高中學分計算系統</h2>
+        <p class="text-white-50 mt-2 mb-0">專為財經法商類組學生設計</p>
+    </header>
+
+    <div id="page1" class="page active">
+        <div class="d-grid gap-2">
+            <button class="btn btn-menu" onclick="showPage('page2')">一：高一學分計算</button>
+            <button class="btn btn-menu" onclick="showPage('page3')">二：高二學分計算</button>
+            <button class="btn btn-menu" onclick="showPage('page4')">三：高三學分計算</button>
+            <button class="btn btn-menu" onclick="showPage('page5')">四：單科重修判定 (學年平均)</button>
+            <button class="btn btn-menu" onclick="showPage('page6'); calculateGraduation();">五：畢業學分總計</button>
+        </div>
+    </div>
+
+    <div id="page2" class="page">
+        <button class="btn btn-secondary mb-3" onclick="showPage('page1')">← 返回主選單</button>
+        <h4 class="mb-3 text-secondary">高一學分輸入</h4>
+        <p class="text-muted small">* 請輸入各科分數（0-100分），系統會自動計算各科總和</p>
+
+        <div class="card">
+            <div class="card-header">1. 部定必修 (54學分)</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>科目</th>
+                                <th>上學期成績</th>
+                                <th>下學期成績</th>
+                            </tr>
+                        </thead>
+                        <tbody id="grade1-fixed">
+                            </tbody>
+                    </table>
                 </div>
             </div>
         </div>
+
+        <div class="card">
+            <div class="card-header">2. 校定必修與多元選修</div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">校定必修 (上學期 2 學分)</label>
+                    <input type="number" id="g1_fixed2_up" class="form-control" placeholder="上學期分數">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">校定必修 (下學期 2 學分)</label>
+                    <input type="number" id="g1_fixed2_dn" class="form-control" placeholder="下學期分數">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">多元選修 (上學期 2 學分)</label>
+                    <input type="number" id="g1_elec_up" class="form-control" placeholder="上學期分數">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">多元選修 (下學期 2 學分)</label>
+                    <input type="number" id="g1_elec_dn" class="form-control" placeholder="下學期分數">
+                </div>
+            </div>
+        </div>
+        <button class="btn btn-custom w-100" onclick="showPage('page1'); calculateGraduation();">儲存並返回</button>
     </div>
 
-    <!-- 高三頁面 (每一項分開) -->
-    <div id="pageG3" class="page">
-        <button class="btn btn-sm btn-outline-secondary mb-3" onclick="showPage('pageMain')">← 返回主選單</button>
+    <div id="page3" class="page">
+        <button class="btn btn-secondary mb-3" onclick="showPage('page1')">← 返回主選單</button>
+        <h4 class="mb-3 text-secondary">高二學分輸入</h4>
+
+        <div class="card">
+            <div class="card-header">1. 部定必修 (48學分)</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>科目</th>
+                                <th>上學期成績</th>
+                                <th>下學期成績</th>
+                            </tr>
+                        </thead>
+                        <tbody id="grade2-fixed">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">2. 加深加廣 (12學分)</div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">國學常識 (上：2學分) / 文學選讀 (下：2學分)</label>
+                    <div class="row g-2">
+                        <div class="col"><input type="number" id="g2_deep1_up" class="form-control" placeholder="上學期分數"></div>
+                        <div class="col"><input type="number" id="g2_deep1_dn" class="form-control" placeholder="下學期分數"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">跨班選修 (上：4學分) / 跨班選修 (下：4學分)</label>
+                    <div class="row g-2">
+                        <div class="col"><input type="number" id="g2_deep2_up" class="form-control" placeholder="上學期分數"></div>
+                        <div class="col"><input type="number" id="g2_deep2_dn" class="form-control" placeholder="下學期分數"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button class="btn btn-custom w-100" onclick="showPage('page1'); calculateGraduation();">儲存並返回</button>
+    </div>
+
+    <div id="page4" class="page">
+        <button class="btn btn-secondary mb-3" onclick="showPage('page1')">← 返回主選單</button>
+        <h4 class="mb-3 text-secondary">高三學分輸入</h4>
+
+        <div class="card">
+            <div class="card-header">1. 部定必修 (18學分)</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>科目</th>
+                                <th>上學期成績</th>
+                                <th>下學期成績</th>
+                            </tr>
+                        </thead>
+                        <tbody id="grade3-fixed">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">2. 加深加廣 (38學分)</div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">數乙 (上：4學分 / 下：4學分)</label>
+                    <div class="row g-2">
+                        <div class="col"><input type="number" id="g3_deep_math_up" class="form-control" placeholder="上學期分數"></div>
+                        <div class="col"><input type="number" id="g3_deep_math_dn" class="form-control" placeholder="下學期分數"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">跨班選修 (上：1學分 / 下：1學分)</label>
+                    <div class="row g-2">
+                        <div class="col"><input type="number" id="g3_deep_elective_up" class="form-control" placeholder="上學期分數"></div>
+                        <div class="col"><input type="number" id="g3_deep_elective_dn" class="form-control" placeholder="下學期分數"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">其他上學期課程 (英文作文2, 歷史3, 空間資訊3, 現代社會3)</label>
+                    <input type="number" id="g3_deep_up" class="form-control" placeholder="上學期加總成績">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">其他下學期課程 (語文表達2, 專題研究2, 英文寫作2, 英文聽講2, 藝術歷史3, 社會環境3, 民主法律3)</label>
+                    <input type="number" id="g3_deep_dn" class="form-control" placeholder="下學期加總成績">
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">3. 多元選修 (4學分)</div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">多元選修 (上學期 2 學分)</label>
+                    <input type="number" id="g3_elec_up" class="form-control" placeholder="上學期分數">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">多元選修 (下學期 2 學分)</label>
+                    <input type="number" id="g3_elec_dn" class="form-control" placeholder="下學期分數">
+                </div>
+            </div>
+        </div>
+        <button class="btn btn-custom w-100" onclick="showPage('page1'); calculateGraduation();">儲存並返回</button>
+    </div>
+
+    <div id="page5" class="page">
+        <button class="btn btn-secondary mb-3" onclick="showPage('page1')">← 返回主選單</button>
+        <h4 class="mb-3 text-secondary">單科重修判定器</h4>
         
-        <!-- 三上 -->
-        <div class="card">
-            <div class="card-header">高三上學期 (精粹一)</div>
-            <div class="section-label">部定必修</div>
-            <div id="g3u_fixed"></div>
-            
-            <div class="section-label">校定與加深選修</div>
-            <div id="g3u_elective"></div>
-            
-            <div class="section-label">多元與專題 (下拉選擇)</div>
-            <div class="subject-row">
-                <input type="checkbox" class="credit-check" data-credit="2.0">
-                <select class="form-select form-select-sm ms-2">
-                    <option value="">選擇多元選修 (2.0)</option>
-                    <option>程式語言實務</option><option>社會研究方法</option><option>自主學習專題</option>
-                </select>
-                <div class="credit-tag ms-2">2.0</div>
+        <div class="card p-4">
+            <div class="mb-3">
+                <label class="form-label fw-bold">課程名稱 (例如：數乙)</label>
+                <input type="text" id="courseName" class="form-control" placeholder="請輸入科目名稱">
             </div>
-            <div class="subject-row">
-                <input type="checkbox" class="credit-check" data-credit="1.0">
-                <select class="form-select form-select-sm ms-2">
-                    <option value="">選擇領域專案 (1.0)</option>
-                    <option>科技應用專題</option><option>資訊安全概論</option>
-                </select>
-                <div class="credit-tag ms-2">1.0</div>
+            <div class="row mb-4">
+                <div class="col">
+                    <label class="form-label">上學期成績</label>
+                    <input type="number" id="s1_score" class="form-control">
+                </div>
+                <div class="col">
+                    <label class="form-label">下學期成績</label>
+                    <input type="number" id="s2_score" class="form-control">
+                </div>
             </div>
-        </div>
-
-        <!-- 三下 -->
-        <div class="card">
-            <div class="card-header purple">高三下學期 (精粹二)</div>
-            <div class="section-label">部定必修</div>
-            <div id="g3d_fixed"></div>
-            
-            <div class="section-label">加深加廣選修</div>
-            <div id="g3d_elective"></div>
-
-            <div class="section-label">自選課程 (下拉選擇)</div>
-            <div class="subject-row purple-row">
-                <input type="checkbox" class="credit-check purple-check" data-credit="2.0">
-                <select class="form-select form-select-sm ms-2">
-                    <option value="">選擇多元選修 (2.0)</option>
-                    <option>財經素養</option><option>各類文學選讀</option>
-                </select>
-                <div class="credit-tag ms-2">2.0</div>
-            </div>
+            <button class="btn btn-custom w-100" onclick="checkRetake()">立即判定</button>
+            <div id="retakeResult" class="mt-3 p-3 border rounded text-center" style="background-color: var(--primary-light); display: none;"></div>
         </div>
     </div>
-    
-    <!-- 高一與高二頁面以此類推，結構相同 -->
-</div>
 
-<div class="total-bar" id="footerBar">
-    目前獲得總學分：<span id="barTotal">0.0</span> / 150
+    <div id="page6" class="page">
+        <button class="btn btn-secondary mb-3" onclick="showPage('page1')">← 返回主選單</button>
+        <h4 class="mb-3 text-secondary">畢業資格審查</h4>
+
+        <div class="card p-3" style="background-color: var(--primary-light);">
+            <div class="row text-center">
+                <div class="col-4 mb-3">
+                    <div class="text-muted small">部定+校定必修</div>
+                    <div id="sum-fixed" class="h3 fw-bold mt-1">0</div>
+                    <div class="text-danger small">門檻: >= 102</div>
+                </div>
+                <div class="col-4 mb-3">
+                    <div class="text-muted small">選修總計</div>
+                    <div id="sum-elective" class="h3 fw-bold mt-1">0</div>
+                    <div class="text-danger small">門檻: >= 40</div>
+                </div>
+                <div class="col-4 mb-3">
+                    <div class="text-muted small">總學分</div>
+                    <div id="sum-total" class="h3 fw-bold mt-1">0</div>
+                    <div class="text-danger small">門檻: >= 150</div>
+                </div>
+            </div>
+            <div class="text-muted small border-top pt-2 mt-2">
+                * 普通班總學分共 182 學分 (部定120, 加深加廣50, 校定必修4, 多元選修8)
+            </div>
+        </div>
+
+        <div id="grad-status" class="alert text-center fw-bold h4 py-3 shadow-sm" style="display: none;"></div>
+        <button class="btn btn-secondary w-50 mx-auto d-block mt-3" onclick="clearData()">清除所有資料</button>
+    </div>
 </div>
 
 <script>
-// 詳細科目列表
-const g3u_fixed_list = [
-    {n: "國語文", c: 4.0}, {n: "英語文", c: 2.0}, {n: "體育", c: 2.0},
-    {n: "藝術生活", c: 1.0}, {n: "音樂", c: 1.0}, {n: "生涯規劃", c: 1.0}, {n: "全民國防", c: 1.0}
-];
-const g3u_elective_list = [
-    {n: "英文作文", c: 2.0}, {n: "數學乙", c: 4.0},
-    {n: "族群性別與國家歷史", c: 3.0}, {n: "空間資訊科技", c: 3.0}, {n: "現代社會與經濟", c: 3.0}
-];
-
-const g3d_fixed_list = [
-    {n: "體育", c: 2.0}, {n: "藝術生活", c: 1.0}, {n: "音樂", c: 1.0},
-    {n: "生命教育", c: 1.0}, {n: "全民國防", c: 1.0}
-];
-const g3d_elective_list = [
-    {n: "語文表達與傳播", c: 2.0}, {n: "英文閱讀與寫作", c: 2.0},
-    {n: "民主政治與法律", c: 3.0}, {n: "數學乙", c: 4.0}
-];
-
-function showPage(id) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    // 如果是高二或主頁，切換底色為綠/紫
-    const bar = document.getElementById('footerBar');
-    bar.style.backgroundColor = (id === 'pageG2') ? '#9A8194' : '#8E9775';
-}
-
-function render(containerId, list, isPurple = false) {
-    const el = document.getElementById(containerId);
-    if (!el) return;
-    el.innerHTML = list.map(s => `
-        <div class="subject-row ${isPurple ? 'purple-row' : ''}">
-            <input type="checkbox" class="credit-check ${isPurple ? 'purple-check' : ''}" data-credit="${s.c}">
-            <span class="subject-name">${s.n}</span>
-            <div class="credit-tag">${s.c.toFixed(1)}</div>
-        </div>
-    `).join('');
-}
-
-function updateScore() {
-    let total = 0;
-    document.querySelectorAll('.credit-check:checked').forEach(cb => {
-        total += parseFloat(cb.getAttribute('data-credit'));
-    });
-    const formatted = total.toFixed(1);
-    document.getElementById('mainTotal').innerText = formatted;
-    document.getElementById('barTotal').innerText = formatted;
+        // 1. 禁用滑鼠右鍵
+    document.addEventListener('contextmenu', function (e) {
+        e.preventDefault();
+    }, false);
     
-    const percent = Math.min((total / 150) * 100, 100);
-    document.getElementById('progressBar').style.width = percent + '%';
-}
+    // 2. 禁用特定組合鍵
+    document.onkeydown = function (e) {
+        // 檢查是否按下 Ctrl 鍵 (或 Mac 的 Command 鍵)
+        const ctrlKey = e.ctrlKey || e.metaKey;
+    
+        // 禁用 Ctrl+U (查看原始碼)
+        if (ctrlKey && e.keyCode === 85) {
+            e.preventDefault();
+            return false;
+        }
+    
+        // 禁用 Ctrl+S (儲存網頁)
+        if (ctrlKey && e.keyCode === 83) {
+            e.preventDefault();
+            return false;
+        }
+    
+        // 禁用 F12 (開發者工具)
+        if (e.keyCode === 123) {
+            e.preventDefault();
+            return false;
+        }
+    
+        // 禁用 Ctrl+Shift+I (檢查元素)
+        if (ctrlKey && e.shiftKey && e.keyCode === 73) {
+            e.preventDefault();
+            return false;
+        }
+    };
+        // 儲存資料的範例邏輯
+    function saveScores() {
+        const allInputs = document.querySelectorAll('input[type="number"]');
+        const data = {};
+        allInputs.forEach(input => {
+            data[input.id] = input.value;
+        });
+        localStorage.setItem('myScores', JSON.stringify(data));
+    }
+    
+    // 讀取資料
+    function loadScores() {
+        const savedData = JSON.parse(localStorage.getItem('myScores'));
+        if (savedData) {
+            Object.keys(savedData).forEach(id => {
+                if (document.getElementById(id)) {
+                    document.getElementById(id).value = savedData[id];
+                }
+            });
+        }
+    }
+    // 預設資料設定
+    const g1_subjects = ["國文", "英文", "數學", "體育", "歷史/地理", "物理/公民", "生物/化學", "健護/地科", "家政/美術", "生科/資訊", "本土"];
+    const g2_subjects = ["國文", "英文", "數A", "體育", "歷史", "地理", "公民", "音樂/美術", "自然探究"];
+    const g3_subjects = ["國文", "英文", "體育", "表藝", "音樂", "生涯", "國防"];
 
-document.addEventListener('change', (e) => {
-    if (e.target.classList.contains('credit-check')) updateScore();
-});
+    // 生成表格的 HTML
+    function generateTable() {
+        const tbody1 = document.getElementById('grade1-fixed');
+        tbody1.innerHTML = g1_subjects.map(sub => `
+            <tr>
+                <td>${sub}</td>
+                <td><input type="number" id="g1_sub_${sub}_up" class="form-control form-control-sm" placeholder="上學期"></td>
+                <td><input type="number" id="g1_sub_${sub}_dn" class="form-control form-control-sm" placeholder="下學期"></td>
+            </tr>
+        `).join('');
 
-// 初始化渲染
-render('g3u_fixed', g3u_fixed_list);
-render('g3u_elective', g3u_elective_list);
-render('g3d_fixed', g3d_fixed_list, true);
-render('g3d_elective', g3d_elective_list, true);
-</script>
+        const tbody2 = document.getElementById('grade2-fixed');
+        tbody2.innerHTML = g2_subjects.map(sub => `
+            <tr>
+                <td>${sub}</td>
+                <td><input type="number" id="g2_sub_${sub}_up" class="form-control form-control-sm" placeholder="上學期"></td>
+                <td><input type="number" id="g2_sub_${sub}_dn" class="form-control form-control-sm" placeholder="下學期"></td>
+            </tr>
+        `).join('');
 
-</body>
-</html>
+        const tbody3 = document.getElementById('grade3-fixed');
+        tbody3.innerHTML = g3_subjects.map(sub => `
+            <tr>
+                <td>${sub}</td>
+                <td><input type="number" id="g3_sub_${sub}_up" class="form-control form-control-sm" placeholder="上學期"></td>
+                <td><input type="number" id="g3_sub_${sub}_dn" class="form-control form-control-sm" placeholder="下學期"></td>
+            </tr>
+        `).join('');
+    }
+
+    // 頁面切換功能
+    function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    // 單科重修判定
+    function checkRetake() {
+        const name = document.getElementById('courseName').value || "該科目";
+        const s1_input = document.getElementById('s1_score').value;
+        const s2_input = document.getElementById('s2_score').value;
+        
+        const resultDiv = document.getElementById('retakeResult');
+        resultDiv.style.display = "block";
+
+        if (s1_input === "" || s2_input === "") {
+            resultDiv.innerHTML = `<span class="text-danger">請輸入完整分數！</span>`;
+            return;
+        }
+
+        const s1 = parseFloat(s1_input);
+        const s2 = parseFloat(s2_input);
+        const avg = (s1 + s2) / 2;
+
+        if (s1 >= 60 && s2 >= 60) {
+            resultDiv.innerHTML = `<span class="text-success"><strong>通過：</strong>上下學期皆及格！學分皆取得。</span>`;
+        } else if (avg >= 60) {
+            resultDiv.innerHTML = `<span class="text-success"><strong>通過：</strong>雖然單學期不及格，但學年平均達 ${avg.toFixed(1)} 分，符合學分取得條件！</span>`;
+        } else {
+            let failSem = s1 < 60 && s2 < 60 ? "上下學期" : (s1 < 60 ? "上學期" : "下學期");
+            resultDiv.innerHTML = `<span class="text-danger"><strong>未達標：</strong>學年平均低於 60 分，${failSem}需重修！</span>`;
+        }
+    }
+
+    // 畢業學分總計算
+    function calculateGraduation() {
+        // 固定必修加總
+        let fixedSum = 0;
+        let isG1_fixedValid = 0;
+        
+        // 為了簡單呈現，假設每個部定必修只要及格(>=60)就算數
+        g1_subjects.forEach(sub => {
+            let u = parseFloat(document.getElementById(`g1_sub_${sub}_up`).value) || 0;
+            let d = parseFloat(document.getElementById(`g1_sub_${sub}_dn`).value) || 0;
+            if (u >= 60) fixedSum += 4; // 綜合評估
+            if (d >= 60) fixedSum += 4;
+        });
+
+        // 加入高一校定
+        let g1_f2u = parseFloat(document.getElementById('g1_fixed2_up').value) || 0;
+        let g1_f2d = parseFloat(document.getElementById('g1_fixed2_dn').value) || 0;
+        if (g1_f2u >= 60) fixedSum += 2;
+        if (g1_f2d >= 60) fixedSum += 2;
+
+        g2_subjects.forEach(sub => {
+            let u = parseFloat(document.getElementById(`g2_sub_${sub}_up`).value) || 0;
+            let d = parseFloat(document.getElementById(`g2_sub_${sub}_dn`).value) || 0;
+            if (u >= 60) fixedSum += 2;
+            if (d >= 60) fixedSum += 2;
+        });
+
+        g3_subjects.forEach(sub => {
+            let u = parseFloat(document.getElementById(`g3_sub_${sub}_up`).value) || 0;
+            let d = parseFloat(document.getElementById(`g3_sub_${sub}_dn`).value) || 0;
+            if (u >= 60) fixedSum += 2; // 約略計算基準
+            
